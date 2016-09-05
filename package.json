@@ -1,0 +1,14 @@
+{
+  "name": "udp-receiver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Apivetta",
+  "license": "MIT",
+  "dependencies": {
+    "winston": "^2.2.0"
+  }
+}
