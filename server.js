@@ -23,10 +23,10 @@ process.on('unhandledRejection', onError);
 
 //Postgresql
 var config = {
-  host: 'localhost',
+  host: 'mondiodb.ddns.net',
   port: 5432,
   user: 'postgres',
-  password: 'UhbIjn93',
+  password: 'Pass1234',
   database: 'ituran',
 };
 
@@ -41,7 +41,7 @@ server.on('listening', function() {
 server.on('message', function(message, remote) {
 
   var data = message.toString().split(',');
-  var query = `INSERT INTO reports VALUES ('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4].trim()}-3','${data[5]}','${data[6]}')`;
+  var query = `INSERT INTO reports VALUES ('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4].trim()}-3','${data[5]}','${data[6]}',(ST_SetSRID(ST_MakePoint(${data[3]},${data[2]}),4326)))`;
   console.log(query);
   pool.query(query);
 });
