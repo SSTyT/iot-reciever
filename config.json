@@ -1,0 +1,15 @@
+{
+  "db": {
+    "host": "sstyt.ddns.net",
+    "port": 5432,
+    "user": "postgres",
+    "password": "UhbIjn93",
+    "database": "ituran",
+    "max": 25,
+    "idleTimeoutMillis": 60000
+  },
+  "logs": {
+    "console": "./logs.log",
+    "exception": "./exceptions.log"
+  }
+}

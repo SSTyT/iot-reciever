@@ -9,6 +9,7 @@
   "author": "Apivetta",
   "license": "MIT",
   "dependencies": {
+    "moment": "^2.15.0",
     "pg": "^6.1.0",
     "winston": "^2.2.0"
   }
