@@ -1,9 +1,11 @@
 var PORT = 9876;
+var APIPORT = 8080;
 
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 var logger = require('./modules/logger');
 var pool = require('./modules/postgre');
+var api = require('./modules/api');
 
 var onError = function(err) {
   if (err) {
@@ -26,3 +28,6 @@ server.on('message', function(message, remote) {
 });
 
 server.bind(PORT);
+api.listen(APIPORT, function () {
+  logger.info('Api listening on ' + APIPORT);
+});
