@@ -1,21 +1,9 @@
 var PORT = 9876;
 
-var winston = require('winston');
 var dgram = require('dgram');
-var Pool = require('pg').Pool;
-
-var config = require('./config.json');
-
-//Winston logger
-var logger = new(winston.Logger)({
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: config.logs.console })
-  ],
-  exceptionHandlers: [
-    new winston.transports.File({ filename: config.logs.exception })
-  ]
-});
+var server = dgram.createSocket('udp4');
+var logger = require('./modules/logger');
+var pool = require('./modules/postgre');
 
 var onError = function(err) {
   if (err) {
@@ -23,22 +11,7 @@ var onError = function(err) {
   }
 };
 
-//Postgresql
-var dbConfig = config.db;
-
-dbConfig.poolLog = function(log, level) {
-  if (level === 'error') {
-    logger.error(log);
-  } else if (level === 'warn') {
-    logger.warn(log);
-  }
-}
-
-var pool = new Pool(config.db);
 pool.on('error', onError);
-
-//UDP receive
-var server = dgram.createSocket('udp4');
 
 server.on('listening', function() {
   var address = server.address();
