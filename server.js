@@ -1,5 +1,4 @@
 var PORT = 9876;
-var APIPORT = 8080;
 
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
@@ -25,9 +24,7 @@ server.on('message', function(message, remote) {
   var query = `INSERT INTO reports VALUES ('${data[0]}','${data[1]}','${data[2]}','${data[3]}','${data[4].trim()}-3','${data[5]}','${data[6]}',(ST_SetSRID(ST_MakePoint(${data[3]},${data[2]}),4326)))`;
   console.log(query);
   pool.query(query, onError);
+  api.emitIo(data);
 });
 
 server.bind(PORT);
-api.listen(APIPORT, function () {
-  logger.info('Api listening on ' + APIPORT);
-});
