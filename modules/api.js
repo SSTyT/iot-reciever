@@ -8,17 +8,7 @@ app.get('/', function(req, res) {
   res.send('Hello World!');
 });
 
-var emitIo = function(data) {
-  var report = {
-    uaid: data[0],
-    encrypt_plate_id: data[1],
-    latitude: data[2],
-    longitude: data[3],
-    loc_time: data[4].trim() + '-3',
-    speed: data[5],
-    head: data[6],
-  }
-
+var emitIo = function(report) {
   io.emit('report', report);
 }
 
