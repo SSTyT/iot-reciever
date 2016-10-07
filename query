@@ -1,0 +1,10 @@
+SELECT uaid, r.encrypt_plate_id, latitude, longitude, loc_time, speed, head
+FROM reports as r
+INNER JOIN 
+(
+SELECT encrypt_plate_id, MAX(loc_time) as Date
+FROM reports
+GROUP BY encrypt_plate_id
+) as MaxDateByPlate
+ON r.encrypt_plate_id = MaxDateByPlate.encrypt_plate_id
+AND r.loc_time = MaxDateByPlate.Date 
