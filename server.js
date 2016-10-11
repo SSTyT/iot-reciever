@@ -1,5 +1,10 @@
-var PORT = 9876;
+var config = require('./config');
+var dgram = require('dgram');
+var server = dgram.createSocket('udp4');
+var logger = require('./modules/logger');
 
+server.bind(config.port);
+/*
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 var logger = require('./modules/logger');
@@ -48,3 +53,5 @@ server.on('message', function(message, remote) {
 });
 
 server.bind(PORT);
+*/
+
