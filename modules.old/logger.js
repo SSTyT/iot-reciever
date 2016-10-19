@@ -1,5 +1,5 @@
-const config = require('../config.js');
-const winston = require('winston');
+var config = require('../config.json');
+var winston = require('winston');
 
 module.exports = new(winston.Logger)({
   transports: [
