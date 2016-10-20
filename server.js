@@ -9,16 +9,6 @@ const providers = require(__base + 'providers');
 providers.forEach(provider => {
   const server = udp.createServer(provider.port, provider.formatter);
 
-  var a = server.use(function(message, remote, next) {
-    console.log("asd1");
-    next();
-  })
-
-  server.use(function(message, remote, next) {
-    console.log("asd2 " + JSON.stringify(remote));
-    next();
-  })
-
   server.use(function(message, remote, next) {
     console.log("asd3 " + JSON.stringify(message));
     next();
