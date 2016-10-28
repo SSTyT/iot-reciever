@@ -1,3 +1,4 @@
 module.exports = {
-  port: 9877
+  port: 9877,
+  ioSocket: 8080 
 }

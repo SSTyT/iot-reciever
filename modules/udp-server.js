@@ -43,5 +43,5 @@ const createServer = (port, formatter) => {
 }
 
 module.exports = {
-  createServer: createServer
+  createServer
 };
