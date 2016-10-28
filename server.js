@@ -8,7 +8,5 @@ const providers = require(__base + 'providers');
 
 providers.forEach(provider => {
   const server = udp.createServer(provider.port, provider.formatter);
-
   provider.middleware.forEach(middleware => server.use(middleware));
-
 });
