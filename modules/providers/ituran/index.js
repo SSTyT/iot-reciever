@@ -1,5 +1,11 @@
 const config = require(__base + 'providers/ituran/config');
 
+const middleware = [
+  (message, remote, next) => {
+    console.log(message);
+  }
+];
+
 module.exports = {
   formatter: message => {
     const data = message.toString().split(',');
@@ -14,5 +20,6 @@ module.exports = {
       head: data[6],
     }
   },
-  port: config.port
+  port: config.port,
+  middleware
 }
