@@ -1,8 +1,33 @@
 const config = require(__base + 'providers/ituran/config');
+const documentDb = require(__base + 'azure/document-db'); //TODO reubicar
+
 
 const middleware = [
   (message, remote, next) => {
     console.log(message);
+    next();
+  },
+  (message, remote, next) => {
+    const connection = documentDb.connect(config.documentDb.host, config.documentDb.key);
+    connection.getOrCreateDatabase('iturandb', (err, db) => {
+      if (err) {
+        console.log(err); //TODO logear posta
+      } else {
+        connection.getOrCreateCollection(db._self, 'reportes', (err, collection) => {
+          if (err) {
+            console.log(err); //TODO logear posta
+          } else {
+            connection.client.createDocument(collection._self, message, (err, document) => {
+              if (err) {
+                console.log(err); //TODO logear posta
+              } else {
+                console.log('Created Document with content: ', document);
+              }
+            });
+          }
+        });
+      }
+    });
   }
 ];
 
@@ -11,7 +36,7 @@ module.exports = {
     const data = message.toString().split(',');
 
     return {
-      uaid: data[0],
+      id: data[0],
       encrypt_plate_id: data[1],
       latitude: data[2],
       longitude: data[3],
