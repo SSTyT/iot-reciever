@@ -1,13 +1,28 @@
 const config = require(__base + 'providers/ituran/config');
 const documentDb = require(__base + 'azure/document-db'); //TODO reubicar
-
+var azure = require('azure-storage');
 
 const middleware = [
   (message, remote, next) => {
-    console.log(message);
+    //console.log(message);
     next();
   },
   (message, remote, next) => {
+    var queueSvc = azure.createQueueService('ituranstorage', 'G/qeuOV+cd+mYHXnQX6FyQ767q+nKyZpmy/NBLTibC8wHgIv353bEpbkFxmcye+ybaC2kDHs8XfliK9RzaAkkQ==');
+
+    queueSvc.createQueueIfNotExists('ituranqueue', function(error, result, response) {
+      if (!error) {
+        queueSvc.createMessage('ituranqueue', JSON.stringify(message), function(error) {
+          if (!error) {
+            console.log('creado');
+          } else {
+            console.log(error);
+          }
+        });
+      }
+    });
+  }
+  /*(message, remote, next) => {
     const connection = documentDb.connect(config.documentDb.host, config.documentDb.key);
     connection.getOrCreateDatabase('iturandb', (err, db) => {
       if (err) {
@@ -28,7 +43,7 @@ const middleware = [
         });
       }
     });
-  }
+  }*/ //document db
 ];
 
 module.exports = {
