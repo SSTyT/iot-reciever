@@ -1,6 +1,24 @@
 const config = require(__base + 'providers/ituran/config');
-const documentDb = require(__base + 'azure/document-db'); //TODO reubicar
-var azure = require('azure-storage');
+//const documentDb = require(__base + 'azure/document-db'); //TODO reubicar
+//var azure = require('azure-storage');
+
+var clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
+var Message = require('azure-iot-device').Message;
+var connectionString = 'HostName=ituran-hub.azure-devices.net;DeviceId=ituran-device;SharedAccessKey=+n74yy6TF6h4kEwkHIJp9/H6O/3tuXPdvFJhQS4myyw=';
+var ready = false;
+var client = clientFromConnectionString(connectionString);
+
+function printResultFor(op) {
+  return function printResult(err, res) {
+    if (err) console.log(op + ' error: ' + err.toString());
+    if (res) console.log(op + ' status: ' + res.constructor.name);
+  };
+}
+
+client.open(function() {
+  ready = true;
+  console.log("connected");
+});
 
 const middleware = [
   (message, remote, next) => {
@@ -8,6 +26,15 @@ const middleware = [
     next();
   },
   (message, remote, next) => {
+    while (!ready) {
+      //TODO sacar gronchada
+    }
+
+    var message = new Message(JSON.stringify(message));
+    console.log("Sending message: " + message.getData());
+    client.sendEvent(message, printResultFor('send'));
+  }
+  /*(message, remote, next) => {
     var queueSvc = azure.createQueueService('ituranstorage', 'G/qeuOV+cd+mYHXnQX6FyQ767q+nKyZpmy/NBLTibC8wHgIv353bEpbkFxmcye+ybaC2kDHs8XfliK9RzaAkkQ==');
 
     queueSvc.createQueueIfNotExists('ituranqueue', function(error, result, response) {
@@ -22,7 +49,7 @@ const middleware = [
       }
     });
   }
-  /*(message, remote, next) => {
+  (message, remote, next) => {
     const connection = documentDb.connect(config.documentDb.host, config.documentDb.key);
     connection.getOrCreateDatabase('iturandb', (err, db) => {
       if (err) {
