@@ -1,12 +1,11 @@
 const config = require(__base + 'providers/ituran/config');
-//const documentDb = require(__base + 'azure/document-db'); //TODO reubicar
-//var azure = require('azure-storage');
 
 var clientFromConnectionString = require('azure-iot-device-amqp').clientFromConnectionString;
 var Message = require('azure-iot-device').Message;
 var connectionString = 'HostName=ituran-hub.azure-devices.net;DeviceId=ituran-device;SharedAccessKey=+n74yy6TF6h4kEwkHIJp9/H6O/3tuXPdvFJhQS4myyw=';
 var ready = false;
 var client = clientFromConnectionString(connectionString);
+
 
 function printResultFor(op) {
   return function printResult(err, res) {
@@ -20,62 +19,40 @@ client.open(function() {
   console.log("connected");
 });
 
+var MAX_BUFFER_LENGTH = 255 * 1024; //255kb
+var messageBuffer = Buffer.from('');
+
 const middleware = [
-  (message, remote, next) => {
-    //console.log(message);
-    next();
-  },
   (message, remote, next) => {
     while (!ready) {
       //TODO sacar gronchada
     }
 
-    var message = new Message(JSON.stringify(message));
-    console.log("Sending message: " + message.getData());
-    client.sendEvent(message, printResultFor('send'));
-  }
-  /*(message, remote, next) => {
-    var queueSvc = azure.createQueueService('ituranstorage', 'G/qeuOV+cd+mYHXnQX6FyQ767q+nKyZpmy/NBLTibC8wHgIv353bEpbkFxmcye+ybaC2kDHs8XfliK9RzaAkkQ==');
-
-    queueSvc.createQueueIfNotExists('ituranqueue', function(error, result, response) {
-      if (!error) {
-        queueSvc.createMessage('ituranqueue', JSON.stringify(message), function(error) {
-          if (!error) {
-            console.log('creado');
-          } else {
-            console.log(error);
-          }
-        });
-      }
-    });
-  }
-  (message, remote, next) => {
-    const connection = documentDb.connect(config.documentDb.host, config.documentDb.key);
-    connection.getOrCreateDatabase('iturandb', (err, db) => {
-      if (err) {
-        console.log(err); //TODO logear posta
+    if (messageBuffer === undefined) {
+      messageBuffer = message;
+    } else {
+      if ((messageBuffer.length + message.length + 1) > MAX_BUFFER_LENGTH) {
+        //TODO envio
+        console.log('Length: ' + messageBuffer.length);
+        console.log('Messages: ' + messageBuffer.toString().split(';').length);
+        messageBuffer = message;
       } else {
-        connection.getOrCreateCollection(db._self, 'reportes', (err, collection) => {
-          if (err) {
-            console.log(err); //TODO logear posta
-          } else {
-            connection.client.createDocument(collection._self, message, (err, document) => {
-              if (err) {
-                console.log(err); //TODO logear posta
-              } else {
-                console.log('Created Document with content: ', document);
-              }
-            });
-          }
-        });
+        messageBuffer = Buffer.concat([messageBuffer, Buffer.from(';'), message]);
       }
-    });
-  }*/ //document db
+    }
+
+
+
+    //var message = new Message(JSON.stringify(message));
+    //console.log("Sending message: " + message.getData());
+    //client.sendEvent(message, printResultFor('send'));
+  }
 ];
 
 module.exports = {
   formatter: message => {
-    const data = message.toString().split(',');
+    return message;
+    /*const data = message.toString().split(',');
 
     return {
       id: data[0],
@@ -85,7 +62,7 @@ module.exports = {
       loc_time: data[4].trim() + '-3',
       speed: data[5],
       head: data[6],
-    }
+    }*/
   },
   port: config.port,
   middleware
