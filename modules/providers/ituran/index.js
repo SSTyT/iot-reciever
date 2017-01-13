@@ -27,6 +27,7 @@ const middleware = [
     while (!ready) {
       //TODO sacar gronchada
     }
+    console.log(message.toString());
 
     if (messageBuffer === undefined) {
       messageBuffer = message;
